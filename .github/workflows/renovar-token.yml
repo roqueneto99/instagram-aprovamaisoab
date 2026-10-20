@@ -5,6 +5,9 @@ name: Renovar token do Instagram
 # com permissão "Secrets: Read and write".
 
 on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/renovar-token.yml"]
   schedule:
     - cron: "17 11 1 * *"
   workflow_dispatch:
