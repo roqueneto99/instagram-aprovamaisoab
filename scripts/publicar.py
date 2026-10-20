@@ -65,8 +65,9 @@ def _url_ok(url):
         r = requests.get(url, timeout=60, stream=True)
         tipo = r.headers.get("content-type", "")
         r.close()
+        print(f"  {r.status_code} {tipo} {url}")
         if url.lower().endswith(".mp4"):
-            return r.status_code == 200 and tipo.startswith("video/")
+            return r.status_code == 200 and (tipo.startswith("video/") or tipo == "application/octet-stream")
         return r.status_code == 200 and tipo.startswith("image/")
     except requests.RequestException:
         return False
