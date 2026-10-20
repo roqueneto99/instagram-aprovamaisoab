@@ -1,6 +1,6 @@
 name: Renovar token do Instagram
 
-# O token de longa duração vale 60 dias. Esta Action renova a cada 30.
+# O token de longa duração vale 60 dias. Esta Action renova a cada 30 (dia 1 de cada mês).
 # Precisa do segredo GH_PAT: token fine-grained deste repositório
 # com permissão "Secrets: Read and write".
 
