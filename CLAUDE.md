@@ -28,7 +28,8 @@ Só faça push de um post com `"status": "aprovado"` quando o Roque tiver dito, 
 
 1. Mostre os PNGs e a legenda no chat antes de qualquer coisa.
 2. Depois do "publica":
-   - `python scripts/preparar_post.py <slug> legenda.txt img1.png ...`
+   - imagens: `python scripts/preparar_post.py <slug> legenda.txt img1.png ...`
+   - Reels: copiar o MP4 para `posts/<data>-<slug>/video.mp4` (reencodar com ffmpeg para H.264/AAC abaixo de 19 MB) e usar `"video": "video.mp4"` no `post.json`
    - troque o status no `post.json` para `aprovado` (se o Roque pediu horário, acrescente `agendado_para` com fuso -03:00)
    - confira: sem travessão, 1 a 10 imagens, legenda até 2.200 caracteres
    - commit `post: <slug>` e push na `main`

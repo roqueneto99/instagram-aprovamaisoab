@@ -62,8 +62,12 @@ def _aguardar_pronto(container_id, limite_s=300):
 
 def _url_ok(url):
     try:
-        r = requests.get(url, timeout=30)
-        return r.status_code == 200 and r.headers.get("content-type", "").startswith("image/")
+        r = requests.get(url, timeout=60, stream=True)
+        tipo = r.headers.get("content-type", "")
+        r.close()
+        if url.lower().endswith(".mp4"):
+            return r.status_code == 200 and tipo.startswith("video/")
+        return r.status_code == 200 and tipo.startswith("image/")
     except requests.RequestException:
         return False
 
@@ -91,6 +95,17 @@ def _criar_item(ig, tentativas=3, **params):
 
 
 def validar(pasta, post):
+    if post.get("video"):
+        nome = post["video"]
+        if not nome.lower().endswith(".mp4"):
+            raise ErroPost(f"{nome}: Reels precisa ser MP4")
+        if not (pasta / nome).is_file():
+            raise ErroPost(f"{nome} não existe na pasta")
+        if (pasta / nome).stat().st_size > 19 * 1024 * 1024:
+            raise ErroPost(f"{nome} passa de 19 MB; o jsDelivr não serve e a Meta não baixa")
+        if len(post.get("legenda", "")) > LIMITE_LEGENDA:
+            raise ErroPost("legenda acima do limite")
+        return
     imagens = post.get("imagens") or []
     legenda = post.get("legenda", "")
     if not 1 <= len(imagens) <= 10:
@@ -110,6 +125,18 @@ def publicar(pasta, post):
     ig = os.environ["IG_USER_ID"]
     bases = [b.strip().rstrip("/") for b in os.environ["MEDIA_BASE_URL"].split(",") if b.strip()]
     rel = pasta.relative_to(RAIZ).as_posix()
+    if post.get("video"):
+        # raw.githubusercontent entrega MP4 como octet-stream; o jsDelivr entrega video/mp4
+        url = _escolher_url(list(reversed(bases)), f"{rel}/{post['video']}")
+        params = dict(media_type="REELS", video_url=url, caption=post["legenda"], share_to_feed="true")
+        if post.get("capa_ms") is not None:
+            params["thumb_offset"] = str(post["capa_ms"])
+        criacao = _api("POST", f"{ig}/media", **params)["id"]
+        _aguardar_pronto(criacao, limite_s=900)
+        media_id = _api("POST", f"{ig}/media_publish", creation_id=criacao)["id"]
+        link = _api("GET", media_id, fields="permalink").get("permalink")
+        return media_id, link
+
     urls = [_escolher_url(bases, f"{rel}/{nome}") for nome in post["imagens"]]
 
     if len(urls) == 1:

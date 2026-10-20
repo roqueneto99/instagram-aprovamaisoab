@@ -21,6 +21,8 @@ Nada vai ao ar sem `status: "aprovado"`. Um post `publicando` ou `publicado` nun
 }
 ```
 
+Para Reels (vídeo MP4 vertical, até 19 MB), troque `imagens` por `"video": "video.mp4"`. Opcional: `"capa_ms": 3000` escolhe o quadro da capa.
+
 Para agendar, acrescente `"agendado_para": "2026-10-22T09:00:00-03:00"`. A Action roda a cada 15 minutos e publica quando a hora chegar (o GitHub pode atrasar alguns minutos).
 
 Status: `rascunho`, `aprovado`, `publicando`, `publicado`, `erro` (com o campo `erro`). Para tentar de novo depois de um erro, volte para `aprovado`.
