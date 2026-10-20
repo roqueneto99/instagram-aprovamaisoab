@@ -1,6 +1,6 @@
 name: Testar conexão com o Instagram
 
-# Só lê o perfil. Não publica nada.
+# Só lê o perfil. Não publica nada. Rode quando trocar o token.
 
 on:
   push:
